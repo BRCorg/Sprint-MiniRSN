@@ -19,12 +19,12 @@ services:
   # Service MySQL
   db:
     image: mysql:8.0
-    container_name: symfony_db
+    container_name: minirsn_db
     ports:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: symfony_db
+      MYSQL_DATABASE: minirsn_db
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
     volumes:
