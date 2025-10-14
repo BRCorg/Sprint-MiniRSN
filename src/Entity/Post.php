@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
@@ -30,12 +31,12 @@ class Post
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $user = null;
+    private ?User $user = null;
 
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'posts')]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'post')]
     private Collection $comments;
 
     public function __construct()
@@ -96,12 +97,12 @@ class Post
         return $this;
     }
 
-    public function getUser(): ?user
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?user $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
@@ -120,7 +121,7 @@ class Post
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setPosts($this);
+            $comment->setPost($this);
         }
 
         return $this;
@@ -130,8 +131,8 @@ class Post
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getPosts() === $this) {
-                $comment->setPosts(null);
+            if ($comment->getPost() === $this) {
+                $comment->setPost(null);
             }
         }
 

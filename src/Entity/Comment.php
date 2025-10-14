@@ -21,13 +21,18 @@ class Comment
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatesAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    private ?user $user = null;
+    private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    private ?Post $posts = null;
+    private ?Post $post = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -58,38 +63,38 @@ class Comment
         return $this;
     }
 
-    public function getUpdatesAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updatesAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdatesAt(?\DateTimeImmutable $updatesAt): static
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
-        $this->updatesAt = $updatesAt;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getUser(): ?user
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?user $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getPosts(): ?Post
+    public function getPost(): ?Post
     {
-        return $this->posts;
+        return $this->post;
     }
 
-    public function setPosts(?Post $posts): static
+    public function setPost(?Post $post): static
     {
-        $this->posts = $posts;
+        $this->post = $post;
 
         return $this;
     }
