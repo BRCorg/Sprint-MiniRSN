@@ -1,0 +1,5 @@
+# Traductions des messages de sécurité en français
+"Invalid credentials.": "Email ou mot de passe incorrect."
+"Username could not be found.": "Utilisateur introuvable."
+"An authentication exception occurred.": "Une erreur d'authentification s'est produite."
+"Invalid CSRF token.": "Jeton CSRF invalide. Veuillez réessayer."
