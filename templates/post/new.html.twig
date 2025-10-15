@@ -79,28 +79,70 @@
 {% block javascripts %}
 {{ parent() }}
 <script>
-    // Prévisualisation de l'image
-    document.getElementById('{{ form.imageFile.vars.id }}').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
+    const fileInput = document.getElementById('{{ form.imageFile.vars.id }}');
+    const dropZone = fileInput.closest('label');
+    const imageContainer = fileInput.closest('div').parentElement;
+
+    // Fonction pour afficher l'aperçu
+    function showPreview(file) {
+        if (file && file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Créer un aperçu de l'image
-                const preview = document.createElement('img');
-                preview.src = e.target.result;
-                preview.className = 'mt-4 max-h-48 rounded-lg';
-                
                 // Supprimer l'ancien aperçu s'il existe
                 const oldPreview = document.querySelector('.image-preview');
                 if (oldPreview) {
                     oldPreview.remove();
                 }
-                
-                // Ajouter le nouvel aperçu
-                preview.className += ' image-preview';
-                e.target.parentElement.parentElement.appendChild(preview);
+
+                // Créer un aperçu de l'image
+                const preview = document.createElement('div');
+                preview.className = 'image-preview mt-4';
+                preview.innerHTML = `
+                    <div class="relative">
+                        <img src="${e.target.result}" class="max-h-64 rounded-lg mx-auto shadow-lg" alt="Preview">
+                        <p class="mt-2 text-sm text-center text-gray-600 dark:text-gray-400">
+                            Fichier sélectionné : <span class="font-semibold">${file.name}</span>
+                        </p>
+                    </div>
+                `;
+
+                imageContainer.appendChild(preview);
             };
             reader.readAsDataURL(file);
+        }
+    }
+
+    // Gestion du changement de fichier (clic)
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            showPreview(file);
+        }
+    });
+
+    // Gestion du drag & drop
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900');
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900');
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            // Assigner le fichier à l'input
+            fileInput.files = files;
+            showPreview(files[0]);
         }
     });
 </script>
