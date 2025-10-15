@@ -30,14 +30,19 @@
                 </div>
                 
                 <!-- Actions si propriétaire -->
-                {% if app.user == comment.user %}
+                {% if app.user == comment.user or is_granted('ROLE_ADMIN') %}
                     <div class="flex space-x-2">
-                        <button class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium">
+                        <a href="{{ path('app_comment_edit', {'id': comment.id}) }}" 
+                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium">
                             Modifier
-                        </button>
-                        <button class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs font-medium">
-                            Supprimer
-                        </button>
+                        </a>
+                        <form method="post" action="{{ path('app_comment_delete', {'id': comment.id}) }}" 
+                              class="inline" onsubmit="return confirm('Supprimer ce commentaire ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-xs font-medium">
+                                Supprimer
+                            </button>
+                        </form>
                     </div>
                 {% endif %}
             </div>
