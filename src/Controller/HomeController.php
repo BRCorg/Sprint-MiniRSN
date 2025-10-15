@@ -10,18 +10,14 @@ use Symfony\Component\Routing\Attribute\Route;
 final class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(PostRepository $postRepository): Response
+    public function index(): Response
     {
         // Rediriger vers login si non connecté
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
 
-        // Récupérer tous les posts
-        $posts = $postRepository->findAll();
-
-        return $this->render('home/index.html.twig', [
-            'posts' => $posts,
-        ]);
+        // Rediriger vers la liste des posts si connecté
+        return $this->redirectToRoute('post_index');
     }
 }

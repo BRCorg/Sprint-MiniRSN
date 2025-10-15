@@ -1,0 +1,86 @@
+<!-- Post Card Component -->
+<article class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
+    <!-- Header du post -->
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <!-- Avatar utilisateur -->
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {% if post.user.name %}
+                        {{ post.user.name|first|upper }}
+                    {% else %}
+                        {{ post.user.email|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                        {% if post.user.name %}
+                            {{ post.user.name }}
+                        {% else %}
+                            {{ post.user.email|split('@')[0] }}
+                        {% endif %}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ post.createdAt|date('d/m/Y à H:i') }}
+                        {% if post.updatedAt %}
+                            <span class="text-gray-400">• modifié</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Menu actions si propriétaire -->
+            {% if app.user == post.user %}
+                <div class="flex space-x-2">
+                    <a href="{{ path('post_edit', {id: post.id}) }}" 
+                       class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors">
+                        Modifier
+                    </a>
+                    <form method="post" action="{{ path('post_delete', {id: post.id}) }}" class="inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                        <button type="submit" 
+                                class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium transition-colors"
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">
+                            Supprimer
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Contenu du post -->
+    <div class="p-4">
+        <p class="text-gray-800 dark:text-gray-200 whitespace-pre-line mb-4">{{ post.content }}</p>
+        
+        {% if post.image %}
+            <div class="mb-4">
+                <img src="{{ asset('uploads/posts/' ~ post.image) }}" 
+                     alt="Image du post" 
+                     class="w-full h-64 sm:h-80 object-cover rounded-lg">
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Footer avec actions -->
+    <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <!-- Lien vers détail avec commentaires -->
+                <a href="{{ path('post_show', {id: post.id}) }}" 
+                   class="flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                    <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span class="text-sm">{{ post.comments|length }} commentaire{{ post.comments|length > 1 ? 's' : '' }}</span>
+                </a>
+            </div>
+            
+            <!-- Bouton voir détail -->
+            <a href="{{ path('post_show', {id: post.id}) }}" 
+               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium transition-colors">
+                Voir détail
+            </a>
+        </div>
+    </div>
+</article>

@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le post - Mini RSN{% endblock %}
+
+{% block body %}
+{{ include('partials/_navbar.html.twig') }}
+
+<div class="container mx-auto max-w-2xl px-4 py-8">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Modifier votre post</h1>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
+            
+            <!-- Messages d'erreur globaux -->
+            {% if form.vars.errors|length > 0 %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
+                    {% for error in form.vars.errors %}
+                        <p>{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Champ contenu -->
+            <div>
+                {{ form_label(form.content, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'}}) }}
+                {{ form_widget(form.content) }}
+                {{ form_errors(form.content) }}
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Modifiez le contenu de votre post (3-1000 caractères)
+                </p>
+            </div>
+
+            <!-- Image actuelle -->
+            {% if post.image %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Image actuelle</label>
+                    <div class="flex items-center space-x-4">
+                        <img src="{{ asset('uploads/posts/' ~ post.image) }}" 
+                             alt="Image actuelle" 
+                             class="h-20 w-20 object-cover rounded-lg">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ post.image }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-500">Choisissez une nouvelle image pour la remplacer</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Champ nouvelle image -->
+            <div>
+                {{ form_label(form.imageFile, 'Nouvelle image (optionnel)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'}}) }}
+                <div class="flex items-center justify-center w-full">
+                    <label for="{{ form.imageFile.vars.id }}" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span class="font-semibold">Cliquez pour choisir</span> une nouvelle image
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF (MAX. 2MB)</p>
+                        </div>
+                        {{ form_widget(form.imageFile, {'attr': {'class': 'hidden'}}) }}
+                    </label>
+                </div>
+                {{ form_errors(form.imageFile) }}
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-between space-x-4">
+                <a href="{{ path('post_show', {id: post.id}) }}" 
+                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                    Annuler
+                </a>
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Enregistrer
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    // Prévisualisation de la nouvelle image
+    document.getElementById('{{ form.imageFile.vars.id }}').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Créer un aperçu de l'image
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.className = 'mt-4 max-h-48 rounded-lg image-preview';
+                
+                // Supprimer l'ancien aperçu s'il existe
+                const oldPreview = document.querySelector('.image-preview');
+                if (oldPreview) {
+                    oldPreview.remove();
+                }
+                
+                // Ajouter le nouvel aperçu
+                e.target.parentElement.parentElement.appendChild(preview);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}
