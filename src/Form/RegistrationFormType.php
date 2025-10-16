@@ -13,6 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class RegistrationFormType extends AbstractType
 {
@@ -56,7 +57,7 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'attr' => [
                     'autocomplete' => 'new-password',
-                    'placeholder' => 'Mot de passe (min. 6 caractères)',
+                    'placeholder' => 'Min. 8 caractères, 1 majuscule, 1 caractère spécial',
                     'class' => 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400'
                 ],
                 'constraints' => [
@@ -64,10 +65,14 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez entrer un mot de passe',
                     ]),
                     new Length([
-                        'min' => 6,
+                        'min' => 8,
                         'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
+                    ]),
+                    new Regex([
+                        'pattern' => '/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?])(?=.{8,})/',
+                        'message' => 'Le mot de passe doit contenir au moins 8 caractères, une majuscule et un caractère spécial (!@#$%^&*()_+-=[]{}|;:,.<>?)'
                     ]),
                 ],
             ])

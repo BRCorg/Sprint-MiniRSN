@@ -128,5 +128,47 @@
     document.getElementById('darkModeToggle').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
     });
+
+    // Validation mot de passe en temps réel
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordField = document.querySelector('input[name="registration_form[plainPassword]"]');
+        if (passwordField) {
+            const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.{8,})/;
+            
+            // Créer l'indicateur de validation
+            const indicator = document.createElement('div');
+            indicator.className = 'mt-2 text-sm';
+            passwordField.parentNode.appendChild(indicator);
+            
+            passwordField.addEventListener('input', function() {
+                const value = this.value;
+                const hasUppercase = /[A-Z]/.test(value);
+                const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value);
+                const hasLength = value.length >= 8;
+                
+                let html = '<div class="space-y-1">';
+                html += `<div class="flex items-center gap-2">`;
+                html += hasLength ? 
+                    '<span class="text-green-600">✓</span><span class="text-green-600">Au moins 8 caractères</span>' : 
+                    '<span class="text-red-600">✗</span><span class="text-red-600">Au moins 8 caractères</span>';
+                html += '</div>';
+                
+                html += `<div class="flex items-center gap-2">`;
+                html += hasUppercase ? 
+                    '<span class="text-green-600">✓</span><span class="text-green-600">Au moins une majuscule</span>' : 
+                    '<span class="text-red-600">✗</span><span class="text-red-600">Au moins une majuscule</span>';
+                html += '</div>';
+                
+                html += `<div class="flex items-center gap-2">`;
+                html += hasSpecial ? 
+                    '<span class="text-green-600">✓</span><span class="text-green-600">Au moins un caractère spécial</span>' : 
+                    '<span class="text-red-600">✗</span><span class="text-red-600">Au moins un caractère spécial</span>';
+                html += '</div>';
+                html += '</div>';
+                
+                indicator.innerHTML = html;
+            });
+        }
+    });
 </script>
 {% endblock %}
