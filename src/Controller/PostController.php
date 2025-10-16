@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Service\PostNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -29,7 +30,7 @@ class PostController extends AbstractController
 
     #[Route('/new', name: 'post_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, PostNotificationService $notificationService): Response
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
@@ -38,7 +39,7 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $post->setUser($this->getUser());
             $post->setCreatedAt(new \DateTimeImmutable());
-            
+
             // Gestion de l'upload d'image
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
@@ -58,9 +59,17 @@ class PostController extends AbstractController
                     $this->addFlash('error', 'Erreur lors de l\'upload de l\'image: ' . $e->getMessage());
                 }
             }
-            
+
             $entityManager->persist($post);
             $entityManager->flush();
+
+            // Envoyer une notification par email aux admins
+            try {
+                $notificationService->notifyNewPost($post);
+            } catch (\Exception $e) {
+                // En cas d'erreur d'envoi d'email, on log mais on ne bloque pas le post
+                // L'utilisateur ne voit pas l'erreur car le post est bien créé
+            }
 
             $this->addFlash('success', 'Post créé avec succès !');
 

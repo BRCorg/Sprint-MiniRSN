@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modération des Commentaires{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-100">
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-900">Commentaires</h1>
+                <a href="{{ path('app_admin_dashboard') }}" class="text-indigo-600 hover:text-indigo-900">Retour au dashboard</a>
+            </div>
+
+            <div class="mt-8">
+                <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                    <ul role="list" class="divide-y divide-gray-200">
+                        {% for comment in comments %}
+                        <li>
+                            <div class="px-4 py-4 sm:px-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <p class="text-sm font-medium text-gray-900">
+                                            Par {{ comment.user.email }}
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            Le {{ comment.createdAt|date('d/m/Y H:i') }}
+                                        </p>
+                                        <p class="mt-2 text-sm text-gray-900">
+                                            {{ comment.text }}
+                                        </p>
+                                    </div>
+                                    <a href="{{ path('app_admin_comment_delete', {'id': comment.id}) }}" 
+                                       class="text-red-600 hover:text-red-900"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire?')">
+                                        Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

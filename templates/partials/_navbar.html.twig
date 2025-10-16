@@ -1,5 +1,5 @@
 <!-- Navigation responsive avec dark mode -->
-<nav class="bg-white dark:bg-gray-800 shadow-lg transition-colors duration-200">
+<nav class="relative bg-white dark:bg-gray-800 shadow-lg transition-colors duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
@@ -57,7 +57,7 @@
                                 Bonjour {% if app.user.name %}{{ app.user.name }}{% else %}{{ app.user.email|split('@')[0] }}{% endif %}
                             </span>
                             <a href="{{ path('app_logout') }}" 
-                               class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 px-3 py-2 font-medium transition-colors">
+                               class="hidden md:inline-block text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 px-3 py-2 font-medium transition-colors">
                                 Déconnexion
                             </a>
                         </div>
@@ -75,11 +75,15 @@
                 {% endif %}
 
                 <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button type="button" 
-                            class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                        <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="md:hidden absolute right-4 top-3 z-50">
+                    <button id="mobile-menu-button" type="button" 
+                            class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                            aria-controls="mobile-menu" aria-expanded="false">
+                        <svg id="mobile-menu-open-icon" class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg id="mobile-menu-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -87,6 +91,19 @@
         </div>
     </div>
 </nav>
+                <!-- Mobile menu (hidden on desktop) will be placed here to appear under the nav -->
+                <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 px-2 pt-2 pb-3 space-y-1 shadow-inner w-full">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        {% if app.user %}
+                            <a href="{{ path('post_index') }}" class="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md font-medium">Feed</a>
+                            <a href="{{ path('app_comment_index') }}" class="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md font-medium">Mes Commentaires</a>
+                            <a href="{{ path('app_logout') }}" class="block text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 px-3 py-2 rounded-md font-medium">Déconnexion</a>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md font-medium">Connexion</a>
+                            <a href="{{ path('app_register') }}" class="block bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md font-medium">S'inscrire</a>
+                        {% endif %}
+                    </div>
+                </div>
 
 <script>
     // Dark mode toggle functionality
@@ -123,4 +140,29 @@
             localStorage.setItem('theme', 'dark');
         }
     });
+
+    // Mobile menu toggle
+    (function() {
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const openIcon = document.getElementById('mobile-menu-open-icon');
+        const closeIcon = document.getElementById('mobile-menu-close-icon');
+
+        if (!mobileBtn || !mobileMenu) return;
+
+        mobileBtn.addEventListener('click', function() {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                mobileBtn.setAttribute('aria-expanded', 'true');
+                openIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileBtn.setAttribute('aria-expanded', 'false');
+                openIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+        });
+    })();
 </script>
