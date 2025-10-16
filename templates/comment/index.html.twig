@@ -1,20 +1,59 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CommentController!{% endblock %}
+{% block title %}Mes Commentaires{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container mx-auto px-4 py-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Mes Commentaires</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/MAMP/htdocs/Sprint-MiniRSN/src/Controller/CommentController.php</code></li>
-        <li>Your template at <code>C:/MAMP/htdocs/Sprint-MiniRSN/templates/comment/index.html.twig</code></li>
-    </ul>
+        {% if comments is empty %}
+            <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-8 text-center">
+                <p class="text-gray-600 dark:text-gray-400 text-lg">Vous n'avez encore publié aucun commentaire.</p>
+                <a href="{{ path('app_post_index') }}" class="inline-block mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Voir les posts
+                </a>
+            </div>
+        {% else %}
+            <div class="space-y-6">
+                {% for comment in comments %}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Commentaire sur : 
+                                    <a href="{{ path('post_show', {'id': comment.post.id}) }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                                        {{ comment.post.content|slice(0, 50) }}...
+                                    </a>
+                                </h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    Publié le {{ comment.createdAt|date('d/m/Y à H:i') }}
+                                    {% if comment.updatedAt > comment.createdAt %}
+                                        (modifié le {{ comment.updatedAt|date('d/m/Y à H:i') }})
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <a href="{{ path('app_comment_edit', {'id': comment.id}) }}" 
+                                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">
+                                    Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_comment_delete', {'id': comment.id}) }}" 
+                                      class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="text-gray-700 dark:text-gray-300">
+                            {{ comment.text|nl2br }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

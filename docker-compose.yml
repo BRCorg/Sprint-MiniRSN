@@ -1,0 +1,64 @@
+
+services:
+  # Service PHP + Apache
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: symfony_php
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - symfony_network
+    depends_on:
+      - db
+
+  # Service MySQL
+  db:
+    image: mysql:8.0
+    container_name: minirsn_db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: minirsn_db
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - symfony_network
+
+  # Service phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: symfony_phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - symfony_network
+    depends_on:
+      - db
+
+  # Service MailHog (interception d'emails)
+  mailhog:
+    image: mailhog/mailhog
+    container_name: symfony_mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Interface web
+    networks:
+      - symfony_network
+
+# Réseau pour la communication entre services
+networks:
+  symfony_network:
+    driver: bridge
+
+# Volumes persistants
+volumes:
+  db_data:

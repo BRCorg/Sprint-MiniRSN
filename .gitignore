@@ -18,3 +18,12 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> database dumps ###
+# Ignorer les dumps temporaires avec horodatage
+/dumps/dump_*.sql
+# Garder le dump partagé dans Git
+!/dumps/dump.sql
+# Garder le dossier dumps
+!/dumps/.gitkeep
+###< database dumps ###

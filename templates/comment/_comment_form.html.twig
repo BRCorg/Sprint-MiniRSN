@@ -1,0 +1,38 @@
+<!-- Comment Form -->
+{% if app.user %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+        <form method="post" action="{{ path('app_comment_quick_add', {'postId': post.id}) }}" class="space-y-4">
+            <div>
+                <label for="comment_text" class="sr-only">Votre commentaire</label>
+                <textarea 
+                    id="comment_text" 
+                    name="comment_text"
+                    rows="3" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white dark:placeholder-gray-400"
+                    placeholder="Écrivez votre commentaire..."
+                    required
+                    minlength="3"
+                    maxlength="1000"></textarea>
+            </div>
+            
+            <input type="hidden" name="_token" value="{{ csrf_token('comment_quick_add') }}">
+            
+            <div class="flex justify-end">
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Commenter
+                </button>
+            </div>
+        </form>
+    </div>
+{% else %}
+    <div class="text-center p-4">
+        <p class="text-gray-500 dark:text-gray-400 mb-4">Vous devez être connecté pour commenter.</p>
+        <a href="{{ path('app_login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+            Se connecter
+        </a>
+    </div>
+{% endif %}

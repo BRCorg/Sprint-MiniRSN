@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commentaire{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-6">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Commentaire</h1>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Par {{ comment.user.name }} le {{ comment.createdAt|date('d/m/Y à H:i') }}
+                    {% if comment.updatedAt > comment.createdAt %}
+                        (modifié le {{ comment.updatedAt|date('d/m/Y à H:i') }})
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Post associé -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Post :</h3>
+                <a href="{{ path('post_show', {'id': comment.post.id}) }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                    {{ comment.post.content|slice(0, 100) }}...
+                </a>
+            </div>
+
+            <!-- Contenu du commentaire -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contenu :</h3>
+                <div class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {{ comment.text|nl2br }}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex space-x-4">
+                {% if app.user == comment.user or is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_comment_edit', {'id': comment.id}) }}" 
+                       class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
+                        Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_comment_delete', {'id': comment.id}) }}" 
+                          class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                            Supprimer
+                        </button>
+                    </form>
+                {% endif %}
+                <a href="{{ path('post_show', {'id': comment.post.id}) }}" 
+                   class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Retour au post
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
