@@ -1,4 +1,6 @@
 import './bootstrap.js';
+// Ensure CSRF protection helpers run (attach listeners for double-submit and Turbo headers)
+import './controllers/csrf_protection_controller.js';
 /*
  * Welcome to your app's main JavaScript file!
  *

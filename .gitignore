@@ -27,3 +27,10 @@
 # Garder le dossier dumps
 !/dumps/.gitkeep
 ###< database dumps ###
+
+###> claude code ###
+# Fichiers de configuration Claude Code
+/.claude/
+.claude_code_config
+.claude_session
+###< claude code ###
